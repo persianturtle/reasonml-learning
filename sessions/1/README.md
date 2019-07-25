@@ -1,6 +1,6 @@
 # Session One
 
-# [View the recording](https://drive.google.com/open?id=1etnbTXQ0KmxfolrdnyGge_w8J2wiyJz5)
+# [View the recording](https://drive.google.com/open?id=1euq904sc49Ie1hhzOFQVnMxZf4UQ9bbV)
 
 This document serves as a compliment (or an alternative) to the video recordings. Links mentioned in the recordings (as well as additional ones) can be found in their corresponding documents.
 
