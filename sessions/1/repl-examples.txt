@@ -1,0 +1,25 @@
+let add = (a, b) => a + b;
+
+---
+
+let animal = "bear";
+
+let matched = switch (animal) {
+  | "bear" => Js.log("bear!");
+  | "alligator" => Js.log("alligator!");
+  | _ => Js.log("default!");
+};
+
+---
+
+type person = {
+  name: string,
+  age: int
+};
+
+let sue = {
+  name: "Sue",
+  age: 42
+};
+
+let sue = ("Sue", 42);

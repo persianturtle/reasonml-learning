@@ -1,0 +1,21 @@
+{
+  "name": "reason-learning-sessions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "re:watch": "bsb -clean-world -make-world -w",
+    "re:build": "bsb -clean-world -make-world",
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bs-platform": "latest",
+    "reason-react": "latest",
+    "webpack": "latest",
+    "webpack-cli": "latest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
