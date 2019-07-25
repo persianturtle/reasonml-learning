@@ -2,7 +2,7 @@
 
 # [View the recording](https://drive.google.com/open?id=1etnbTXQ0KmxfolrdnyGge_w8J2wiyJz5)
 
-This document serves as a compliment (or an alternative) to the video recordings. Links mentioned in the recordings can be found in their corresponding documents. We'll be taking advantage of the text format to better explain concepts as well as provide more examples than were shown in the recording.
+This document serves as a compliment (or an alternative) to the video recordings. Links mentioned in the recordings (as well as additional ones) can be found in their corresponding documents.
 
 ## Homework
 
