@@ -12,10 +12,10 @@ This document serves as a compliment (or an alternative) to the video recordings
 
 ## Table of Contents
 
-- [Reviewing Homework](#history-of-ocaml) (0:00)
+- [Reviewing Homework](#reviewing-homework) (0:00)
 - [Learning Session Goals](#learning-session-goals) (0:39)
 - [REPL Examples](#repl-examples) (1:23)
-- [Explore Reason & BuckleScript](#explore-reason-and-bucklescript) (9:39)
+- [Explore Reason & BuckleScript](#explore-reason--bucklescript) (9:39)
 - [Setting up a Development Environment](#setting-up-a-development-environment) (14:24)
 - [Discord Channel](#discord-channel) (25:25)
 - [DOM Manipulation](#dom-manipulation) (28:02)
