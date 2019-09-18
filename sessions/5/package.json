@@ -18,10 +18,19 @@
     "reason-react": "latest"
   },
   "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
     "bs-platform": "latest",
     "clean-webpack-plugin": "latest",
+    "css-loader": "latest",
     "html-webpack-plugin": "latest",
+    "node-sass": "latest",
     "npm-run-all": "latest",
+    "sass-loader": "latest",
+    "style-loader": "latest",
     "webpack": "latest",
     "webpack-cli": "latest",
     "webpack-dev-server": "latest"
