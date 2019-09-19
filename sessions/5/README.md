@@ -1,6 +1,6 @@
-# Session Four
+# Session Five
 
-# [View the recording](https://drive.google.com/open?id=1ZCA258nY6pTwvm4buYX8tZcDw3u_VP2E)
+# [View the recording](https://drive.google.com/open?id=1Ge1waHvlcJUNltXGMnORVVrTams3lqKE)
 
 This document serves as a compliment (or an alternative) to the video recordings. Links mentioned in the recordings (as well as additional ones) can be found in their corresponding documents.
 
@@ -11,169 +11,230 @@ This document serves as a compliment (or an alternative) to the video recordings
 
 ## Goals
 
-Since the `<Collapse />` depends on Homebase's `<Uid />` component, we'll use this session to first bind to and then rewrite the `<Uid />` component.
+In this session we're finally starting to rewrite the `<Collapse />` component! This rewrite should span the next two sessions as well. Our goal for now is simply just to translate our existing ReactJS implementation into ReasonReact. After we've gotten the code to a working state, we'll look for opportunities to make things even simpler. As we refactor, we'll see how the compiler can help us!
 
 ## Table of Contents
 
-- [Bind to Uid](#bind-to-uid) (1:28)
-- [Using the bound component](#using-the-bound-component) (6:26)
-- [Rewrite Uid](#rewrite-uid) (7:38)
-- [useEffect](#useEffect) (16:16)
+- [Scaffold the Collapse component](#scaffold-the-collapse-component) (0:00)
+- [getInitialHeight](#getinitialheight) (6:10)
+- [Type Inference](#type-inference) (10:41)
+- [componentDidMount Stuff](#componentDidMount-stuff) (12:57)
+- [collapsibleRef](#collapsibleref) (13:39)
+- [getIsOpen](#getisopen) (14:29)
+- [Alias a labelled argument](#alias-a-labelled-argument) (15:13)
+- [State](#state) (16:49)
+- [More componentDidMount Stuff](#more-componentdidmount-stuff) (21:37)
+- [Type System to the Rescue](#type-system-to-the-rescue) (23:09)
+- [When Clause](#when-clause) (27:40)
+- [Review](#review) (35:20)
 
-## Bind to Uid
-
-To bind to an existing ReactJS component, we can create a new Reason file and provide:
-
-- the path to the existing ReactJS component
-- the `[@react.component]` decorator
-- the type of the `make` function including prop types
-- the default or named export of the dependency
-
-`Component.re`
-
-```reason
-[@bs.module "./path/to/Component.js"][@react.component]
-external make: (~name: string) => React.element = "default";
-```
-
-Since `hb-uid.js` exists in `../dependencies/hb-uid.js`, this becomes:
-
-`Hbuid.re`
+## Scaffold the Collapse component
 
 ```reason
-[@bs.module "../dependencies/hb-uid.js"] [@react.component]
-external make: (~children: int => React.element) => React.element = "default";
-```
+let defaultDuration = 300;
+let defaultTiming = "cubic-bezier(0.09, 1.03, 0.57, 0.97)";
 
-## Using the bound component
-
-Using the bound component is the same as using a normal ReasonReact component.
-
-`Hbuid.re`
-
-```reason
-[@bs.module "../dependencies/hb-uid.js"] [@react.component]
-external make: (~children: int => React.element) => React.element = "default";
-```
-
-`Demo.re`
-
-```reason
 [@react.component]
-let make = () => {
-  <Hbuid>
-    {uid =>
-       <p> {ReasonReact.string("the id is: " ++ string_of_int(uid))} </p>}
-  </Hbuid>;
+let make =
+  (
+    ~isOpen=?,
+    ~defaultOpen=false,
+    ~collapsedHeight=0,
+    ~duration=defaultDuration,
+    ~timingFunction=defaultTiming,
+    ~closeDuration=duration,
+    ~closeTimingFunction=timingFunction,
+    ~openDuration=duration,
+    ~openTimingFunction=timingFunction,
+    ~maxHeight=?,
+    ~children,
+  ) => {};
+```
+
+Notice that we're able to default the `~closeDuration` prop to the value of the `~duration` prop!
+
+## getInitialHeight
+
+```reason
+let getInitialHeight = (~isOpen, ~defaultOpen, ~maxHeight, ~collapsedHeight) => {
+  switch (isOpen, defaultOpen) {
+  | (Some(true), _)
+  | (_, true) =>
+    switch (maxHeight) {
+    | Some(maxHeight) => string_of_int(maxHeight) ++ "px"
+    | None => "auto"
+    }
+  | _ => string_of_int(collapsedHeight) ++ "px"
+  };
 };
 ```
 
-## Rewrite Uid
+## Type Inference
 
-### Original JS
+How does OCaml know the types of the arguments to `getInitialHeight`? Does it rely on what was passed into the function? Watch this segment to find out!
 
-```javascript
-/**
- * HB Unique ID
- *
- * Utility for creating unique IDs
- *
- * @flow
- * @author    Rogin Farrer <rfarrer@wayfair.com>
- * @copyright 2019 Wayfair LLC - All rights reserved
- */
-import { Component } from 'react'
-
-export default class Uid extends Component {
-  static counter = 0
-  state = { uid: 0 }
-  componentDidMount() {
-    this.setState({ uid: Uid.counter++ })
-  }
-  render() {
-    return this.props.children(this.state.uid)
-  }
-}
-```
-
-### Reason
+## componentDidMount Stuff
 
 ```reason
-let counter = ref(0);
+React.useEffect1(() => None, [||]);
+```
+
+This effect will run once and only once since the dependency array is empty. Normal ReactJS stuff. Great, so we'll come back to this effect once we've implemented some other bindings that are used inside of it.
+
+## collapsibleRef
+
+```reason
+let collapsibleRef = React.useRef(Js.Nullable.null);
+```
+
+Looks familiar from our previous sessions.
+
+## getIsOpen
+
+```reason
+let getIsOpen = (~isOpenProp, ~isOpenState) => {
+  switch (isOpenProp) {
+  | Some(isOpen) => isOpen
+  | None => isOpenState
+  };
+};
+```
+
+## Alias a labelled argument
+
+```reason
+[@react.component]
+let make =
+  (
+    ~isOpen as isOpenProp=?,
+```
+
+## State
+
+```reason
+let (isOpenState, setOpen) =
+  React.useState(() =>
+    switch (isOpenProp) {
+    | Some(isOpen) => isOpen
+    | None => defaultOpen
+    }
+  );
+```
+
+## More componentDidMount Stuff
+
+```reason
+React.useEffect1(
+  () => {
+    let isOpen = getIsOpen(~isOpenProp, ~isOpenState);
+    switch (React.Ref.current(collapsibleRef)->Js.Nullable.toOption) {
+    | Some(collapsible) =>
+      let collapsible = ReactDOMRe.domElementToObj(collapsible);
+
+      if (isOpen && collapsible##clientHeight != 0) {
+        let height =
+          switch (maxHeight) {
+          | Some(maxHeight) => string_of_int(maxHeight) ++ "px"
+          | None => "auto"
+          };
+        collapsible##style##height #= height;
+      };
+
+      if (!isOpen && collapsedHeight == 0) {
+        collapsible##style##display #= "none";
+      };
+    | None => ()
+    };
+    None;
+  },
+  [||],
+);
+```
+
+## Type System to the Rescue
+
+Here, we have an error that I missed, but was given realtime feedback from the typesystem / editor which lead me to catch this much earlier than I otherwise would have.
+
+## When Clause
+
+https://reasonml.github.io/docs/en/pattern-matching#when-clauses
+
+## Review
+
+Here we review switch statements in general as well as what we've done with our `<Collapse />` component so far.
+
+```reason
+let defaultDuration = 300;
+let defaultTiming = "cubic-bezier(0.09, 1.03, 0.57, 0.97)";
+
+let getInitialHeight = (~isOpen, ~defaultOpen, ~maxHeight, ~collapsedHeight) => {
+  switch (isOpen, defaultOpen) {
+  | (Some(true), _)
+  | (_, true) =>
+    switch (maxHeight) {
+    | Some(maxHeight) => string_of_int(maxHeight) ++ "px"
+    | None => "auto"
+    }
+  | _ => string_of_int(collapsedHeight) ++ "px"
+  };
+};
+
+let getIsOpen = (~isOpenProp, ~isOpenState) => {
+  switch (isOpenProp) {
+  | Some(isOpen) => isOpen
+  | None => isOpenState
+  };
+};
 
 [@react.component]
-let make = (~children) => {
-  let (uid, setUid) = React.useState(() => 0);
+let make =
+    (
+      ~isOpen as isOpenProp=?,
+      ~defaultOpen=false,
+      ~collapsedHeight=0,
+      ~duration=defaultDuration,
+      ~timingFunction=defaultTiming,
+      ~closeDuration=duration,
+      ~closeTimingFunction=timingFunction,
+      ~openDuration=duration,
+      ~openTimingFunction=timingFunction,
+      ~maxHeight=?,
+      ~children,
+    ) => {
+  let collapsibleRef = React.useRef(Js.Nullable.null);
+
+  let (isOpenState, setOpen) =
+    React.useState(() =>
+      switch (isOpenProp) {
+      | Some(isOpen) => isOpen
+      | None => defaultOpen
+      }
+    );
 
   React.useEffect1(
     () => {
-      setUid(_uid => counter^);
-      counter := counter^ + 1;
+      let isOpen = getIsOpen(~isOpenProp, ~isOpenState);
+      switch (React.Ref.current(collapsibleRef)->Js.Nullable.toOption) {
+      | Some(collapsible) =>
+        let collapsible = ReactDOMRe.domElementToObj(collapsible);
+
+        if (isOpen && collapsible##clientHeight != 0) {
+          let height =
+            switch (maxHeight) {
+            | Some(maxHeight) => string_of_int(maxHeight) ++ "px"
+            | None => "auto"
+            };
+          collapsible##style##height #= height;
+        };
+
+        if (!isOpen && collapsedHeight == 0) {
+          collapsible##style##display #= "none";
+        };
+      | None => ()
+      };
       None;
     },
     [||],
   );
-
-  children(uid);
 };
 ```
-
-Remember, `useEffect` runs on every render by default. From the React Hooks docs:
-
-> If you want to run an effect and clean it up only once (on mount and unmount), you can pass an empty array ([]) as a second argument. This tells React that your effect doesn’t depend on any values from props or state, so it never needs to re-run. This isn’t handled as a special case — it follows directly from how the dependencies array always works.
-
-## useEffect
-
-The type of `React.useEffect` is `unit => option(unit => unit) = unit`. This makes sense once we realize that `useEffect` in ReactJS optionally returns a cleanup function.
-
-The following ReactJS:
-
-```javascript
-useEffect(() => {
-  console.log('effect')
-})
-```
-
-corresponds to:
-
-```reason
-React.useEffect(() => {
-  Js.log("effect");
-  None;
-})
-```
-
-since the last expression of a block is always returned, and the type of `useEffect` requires us to explicitly return `option(unit => unit)`. `None` does meet that requirement.
-
-Alternatively, we could return a cleanup function.
-
-```reason
-React.useEffect(() => {
-  Js.log("effect");
-  Some(() => {Js.log("cleanup on unmount")});
-})
-```
-
-And ReactJS will call the cleanup function on unmount.
-
-In ReasonReact, we have multiple versions of `React.useEffect`.
-
-- `React.useEffect`
-- `React.useEffect0`
-- `React.useEffect1`
-- `React.useEffect2`
-- `React.useEffect3`
-- `React.useEffect4`
-
-And the reason for this is that OCaml doesn't allow functions to have an arbitrary number of arguments. Furthermore, arrays in Reason are fix-sized on native (flexibly sized in JavaScript) so the above corresponds to:
-
-- `React.useEffect` => no array argument
-- `React.useEffect0` => equivalent to `React.useEffect`
-- `React.useEffect1` => empty array as second argument
-- `React.useEffect2` => array as second argument with one element
-- `React.useEffect3` => array as second argument with two element
-- `React.useEffect4` => array as second argument with three element
-
-### ReasonReact on native?
-
-It's interesting to note that the Facebook seems to want ReasonReact to support native platforms since if they didn't, then there would only ever need to be `React.useEffect1` at most since arrays can be flexibly sized in JavaScript. Perhaps one day we'll be able to use ReasonReact directly on native without needing some JavaScript bridge (i.e. React Native).
