@@ -27,6 +27,7 @@ In this session we're finally starting to rewrite the `<Collapse />` component! 
 - [Type System to the Rescue](#type-system-to-the-rescue) (23:09)
 - [When Clause](#when-clause) (27:40)
 - [Review](#review) (35:20)
+- [Correction](#correction)
 
 ## Scaffold the Collapse component
 
@@ -238,3 +239,9 @@ let make =
   );
 };
 ```
+
+## Correction
+
+I have to correct a statement that I made at the end of the video.
+
+I think that it _is_ correct that `defaultOpen` is defined as `defaultOpen: boolean` instead of `defaultOpen: ?boolean` in the original Flow version since that prop has a default value of `false`.
