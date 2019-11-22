@@ -14,35 +14,14 @@ ReactDOMRe.renderToElementWithId(
               getTogglerProps(~onClick=_event => Js.log("Huzzah!"), ());
             let collapsibleProps = getCollapsibleProps();
             <>
-              <button
-                id={togglerProps.id}
-                ariaControls={togglerProps.ariaControls}
-                ariaExpanded={togglerProps.ariaExpanded}
-                tabIndex={togglerProps.tabIndex}
-                type_={togglerProps.type_}
-                onClick={togglerProps.onClick}>
+              <CollapseToggler togglerProps>
                 {ReasonReact.string(
                    "Collapsible Content"
                    ++ " - "
                    ++ (isOpen ? "opened" : "closed"),
                  )}
-              </button>
-              <div
-                id={collapsibleProps.id}
-                ariaHidden={collapsibleProps.ariaHidden}
-                onTransitionEnd={collapsibleProps.onTransitionEnd}
-                ref={ReactDOMRe.Ref.domRef(collapsibleProps.ref)}
-                style={ReactDOMRe.Style.make(
-                  ~height=collapsibleProps.style.height,
-                  ~overflow=collapsibleProps.style.overflow,
-                  ~transitionProperty=
-                    collapsibleProps.style.transitionProperty,
-                  ~transitionDuration=
-                    collapsibleProps.style.transitionDuration,
-                  ~transitionTimingFunction=
-                    collapsibleProps.style.transitionTimingFunction,
-                  (),
-                )}>
+              </CollapseToggler>
+              <Collapsible collapsibleProps>
                 <div
                   ref={ReactDOMRe.Ref.domRef(contentRef)}
                   style={ReactDOMRe.Style.make(~width="300px", ())}>
@@ -53,7 +32,7 @@ ReactDOMRe.renderToElementWithId(
                 iure, delectus, laborum voluptas quasi.",
                    )}
                 </div>
-              </div>
+              </Collapsible>
             </>;
           }}
        </Collapse>}

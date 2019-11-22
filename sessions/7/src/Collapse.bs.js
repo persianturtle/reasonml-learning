@@ -195,7 +195,6 @@ function Collapse(Props) {
           }
           return undefined;
         }), /* array */[]);
-  console.log(isTransitioning.current);
   React.useEffect((function () {
           isTransitioning.current = true;
           clearTimeout(transitionTimeoutId.current);

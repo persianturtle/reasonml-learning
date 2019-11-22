@@ -1,0 +1,19 @@
+[@react.component]
+let make = (~collapsibleProps: Collapse.collapsibleProps, ~children) => {
+  <div
+    id={collapsibleProps.id}
+    ariaHidden={collapsibleProps.ariaHidden}
+    onTransitionEnd={collapsibleProps.onTransitionEnd}
+    ref={ReactDOMRe.Ref.domRef(collapsibleProps.ref)}
+    style={ReactDOMRe.Style.make(
+      ~height=collapsibleProps.style.height,
+      ~overflow=collapsibleProps.style.overflow,
+      ~transitionProperty=collapsibleProps.style.transitionProperty,
+      ~transitionDuration=collapsibleProps.style.transitionDuration,
+      ~transitionTimingFunction=
+        collapsibleProps.style.transitionTimingFunction,
+      (),
+    )}>
+    children
+  </div>;
+};

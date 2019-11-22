@@ -1,4 +1,4 @@
-# Session Five
+# Session Six
 
 # [View the recording](https://drive.google.com/open?id=11AfNXXHE4CdwflcG4YBDlwleq-sb1R1R)
 

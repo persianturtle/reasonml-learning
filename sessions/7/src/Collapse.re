@@ -256,8 +256,6 @@ let make =
     [||],
   );
 
-  Js.log(React.Ref.current(isTransitioning));
-
   React.useEffect(() => {
     React.Ref.setCurrent(isTransitioning, true);
     clearTimeout(React.Ref.current(transitionTimeoutId));
